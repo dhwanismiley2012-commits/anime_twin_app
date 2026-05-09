@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anime Twin App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      font-family:'Poppins',sans-serif;
+      background:linear-gradient(135deg,#070014,#12002d,#1f003f);
+      color:white;
+      overflow-x:hidden;
+      min-height:100vh;
+    }
+
+    .bg-animation{
+      position:fixed;
+      width:100%;
+      height:100%;
+      z-index:-1;
+      overflow:hidden;
+    }
+
+    .circle{
+      position:absolute;
+      border-radius:50%;
+      background:rgba(255,255,255,0.08);
+      animation:float 15s infinite linear;
+      filter:blur(3px);
+    }
+
+    @keyframes float{
+      from{transform:translateY(100vh) rotate(0deg);}
+      to{transform:translateY(-120vh) rotate(360deg);}
+    }
+
+    header{
+      text-align:center;
+      padding:40px 20px;
+    }
+
+    header h1{
+      font-size:4rem;
+      font-family:'Orbitron',sans-serif;
+      background:linear-gradient(to right,#ff00ff,#00ffff);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      text-shadow:0 0 20px #ff00ff;
+      animation:glow 2s infinite alternate;
+    }
+
+    @keyframes glow{
+      from{text-shadow:0 0 15px #ff00ff;}
+      to{text-shadow:0 0 35px #00ffff;}
+    }
+
+    .subtitle{
+      margin-top:10px;
+      font-size:1.1rem;
+      color:#d6d6ff;
+    }
+
+    .container{
+      max-width:1000px;
+      margin:auto;
+      padding:20px;
+    }
+
+    .question-box{
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.12);
+      backdrop-filter:blur(12px);
+      border-radius:20px;
+      padding:30px;
+      margin-bottom:30px;
+      box-shadow:0 0 20px rgba(255,0,255,0.3);
+      transition:0.4s;
+    }
+
+    .question-box:hover{
+      transform:translateY(-5px);
+      box-shadow:0 0 30px rgba(0,255,255,0.4);
+    }
+
+    .question{
+      font-size:1.3rem;
+      margin-bottom:20px;
+      font-weight:600;
+    }
+
+    .options{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
+    .option-btn{
+      background:linear-gradient(135deg,#ff00ff,#00c3ff);
+      border:none;
+      padding:15px;
+      border-radius:15px;
+      color:white;
+      font-size:1rem;
+      cursor:pointer;
+      transition:0.3s;
+      box-shadow:0 0 15px rgba(255,0,255,0.5);
+    }
+
+    .option-btn:hover{
+      transform:scale(1.05);
+      box-shadow:0 0 25px rgba(0,255,255,0.7);
+    }
+
+    .option-btn.selected{
+      border:3px solid white;
+      transform:scale(1.03);
+    }
+
+    .submit-btn{
+      display:block;
+      margin:40px auto;
+      padding:18px 40px;
+      border:none;
+      border-radius:50px;
+      background:linear-gradient(to right,#ff0080,#7928ca,#00ffff);
+      color:white;
+      font-size:1.3rem;
+      cursor:pointer;
+      box-shadow:0 0 25px rgba(255,0,255,0.6);
+      transition:0.3s;
+    }
+
+    .submit-btn:hover{
+      transform:scale(1.08);
+    }
+
+    .result{
+      text-align:center;
+      margin:50px 0;
+      display:none;
+      animation:fadeIn 1s ease;
+    }
+
+    .result img{
+      width:260px;
+      border-radius:20px;
+      margin-top:20px;
+      box-shadow:0 0 30px rgba(255,255,255,0.4);
+    }
+
+    .result h2{
+      font-size:3rem;
+      margin-top:20px;
+      color:#00ffff;
+      text-shadow:0 0 20px #00ffff;
+    }
+
+    .result p{
+      margin-top:15px;
+      font-size:1.2rem;
+      color:#e6e6ff;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(40px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    .music-note{
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      background:#111;
+      padding:15px;
+      border-radius:50%;
+      font-size:1.5rem;
+      box-shadow:0 0 20px #ff00ff;
+      cursor:pointer;
+      z-index:999;
+    }
+
+    footer{
+      text-align:center;
+      padding:30px;
+      color:#aaa;
+    }
+
+    @media(max-width:768px){
+      .options{
+        grid-template-columns:1fr;
+      }
+
+      header h1{
+        font-size:2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-animation" id="bg"></div>
+
+<header>
+  <h1>ANIME TWIN APP</h1>
+  <p class="subtitle">Discover your ultimate anime soulmate character ✨</p>
+</header>
+
+<div class="container" id="quizContainer"></div>
+
+<button class="submit-btn" onclick="showResult()">Reveal My Anime Twin</button>
+
+<div class="result" id="result">
+  <h2 id="characterName"></h2>
+  <img id="characterImg" src="" alt="anime character">
+  <p id="characterDesc"></p>
+</div>
+
+<div class="music-note" onclick="toggleMusic()">🎵</div>
+
+<audio id="bgMusic" loop>
+  <!-- Replace with your own licensed anime-style soundtrack -->
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5d4b1f4b4d.mp3?filename=future-bass-117997.mp3" type="audio/mp3">
+</audio>
+
+<footer>
+  Anime Twin App • Neon Anime Universe • Interactive Personality Finder
+</footer>
+
+<script>
+
+const questions = [
+  {
+    q:"A villain threatens your city. What do you do?",
+    options:["Fight instantly","Make a smart strategy","Protect friends first","Stay calm and observe"]
+  },
+  {
+    q:"Your ideal power would be?",
+    options:["Fire abilities","Mind control","Shadow powers","Lightning speed"]
+  },
+  {
+    q:"What describes your vibe?",
+    options:["Chaotic","Mysterious","Soft-hearted","Confident"]
+  },
+  {
+    q:"Your friends see you as...",
+    options:["Leader","Funny","Silent","Loyal"]
+  },
+  {
+    q:"Pick an anime world.",
+    options:["Ninja villages","Cyberpunk Tokyo","Magic academy","Pirate seas"]
+  },
+  {
+    q:"How do you react to betrayal?",
+    options:["Revenge","Forgive later","Disappear quietly","Act cold"]
+  },
+  {
+    q:"What motivates you most?",
+    options:["Dreams","Love","Power","Freedom"]
+  },
+  {
+    q:"Pick a weapon.",
+    options:["Katana","Magic staff","Dual daggers","Bare fists"]
+  },
+  {
+    q:"Your battle style?",
+    options:["Aggressive","Calculated","Fast","Defensive"]
+  },
+  {
+    q:"What color suits you?",
+    options:["Red","Blue","Purple","Black"]
+  },
+  {
+    q:"Your ideal night would be?",
+    options:["Gaming","Reading manga","Exploring city lights","Watching stars"]
+  },
+  {
+    q:"If you had a pet?",
+    options:["Dragon","Fox","Cat","Wolf"]
+  },
+  {
+    q:"Pick a soundtrack.",
+    options:["Epic orchestral","Lo-fi anime beats","Rock openings","Dark piano"]
+  },
+  {
+    q:"Your hidden trait?",
+    options:["Kindness","Intelligence","Obsessiveness","Fearlessness"]
+  },
+  {
+    q:"Your dream title?",
+    options:["Hero","King","Legend","Anti-hero"]
+  },
+  {
+    q:"Which element feels like you?",
+    options:["Ice","Fire","Storm","Darkness"]
+  },
+  {
+    q:"Choose a quote.",
+    options:["Never give up","Power changes destiny","Silence speaks","Protect what matters"]
+  },
+  {
+    q:"Your energy in a group?",
+    options:["Main character","Chaos gremlin","Quiet observer","Protective bestie"]
+  },
+  {
+    q:"What scares you most?",
+    options:["Failure","Loneliness","Losing control","Being forgotten"]
+  },
+  {
+    q:"How would your anime end?",
+    options:["Legendary sacrifice","Happy ending","Mysterious disappearance","Epic victory"]
+  }
+];
+
+const animeCharacters = [
+  "Naruto Uzumaki","Sasuke Uchiha","Itachi Uchiha","Gojo Satoru","Levi Ackerman","Eren Yeager",
+  "Mikasa Ackerman","Luffy","Zoro","Sanji","Tanjiro","Nezuko","Zenitsu","Inosuke",
+  "Light Yagami","L Lawliet","Killua","Gon","Hisoka","Chrollo","Hinata Hyuga",
+  "Kakashi Hatake","Madara Uchiha","Obito Uchiha","Bakugo","Deku","Shoto Todoroki",
+  "Aizawa","Dazai","Chuuya","Yor Forger","Loid Forger","Anya Forger","Rimuru Tempest",
+  "Sung Jinwoo","Asta","Yuno","Meliodas","Ban","Escanor","Natsu Dragneel",
+  "Gray Fullbuster","Erza Scarlet","Lucy Heartfilia","Zero Two","Kaneki Ken","Touka Kirishima",
+  "Rengoku","Tengen Uzui","Muichiro Tokito","Shinobu Kocho","Giyu Tomioka","Sakura Haruno",
+  "Jiraiya","Minato Namikaze","Karma Akabane","Nagisa Shiota","Yato","Hori Kyoko",
+  "Miyamura Izumi","Ichigo Kurosaki","Ulquiorra","Byakuya Kuchiki","Yami Sukehiro",
+  "Noelle Silva","Jotaro Kujo","Dio Brando","Josuke Higashikata","Yuji Itadori",
+  "Megumi Fushiguro","Nobara Kugisaki","Toge Inumaki","Akaza","Muzan Kibutsuji",
+  "Ayanokoji","Kiyotaka","Alucard","Violet Evergarden"
+];
+
+const descriptions = [
+  "You radiate powerful protagonist energy and inspire everyone around you.",
+  "You are calm, stylish and secretly overpowered.",
+  "You hide deep emotions beneath a mysterious personality.",
+  "You are fearless and protective of people you care about.",
+  "You give chaotic but lovable anime best friend vibes.",
+  "You have unmatched determination and a strong sense of justice.",
+  "You are elegant, intelligent and difficult to predict.",
+  "You carry dark aesthetic energy with legendary confidence."
+];
+
+const images = [
+  "https://images.unsplash.com/photo-1541560052-5e137f229371?q=80&w=900&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=900&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=900&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1484417894907-623942c8ee29?q=80&w=900&auto=format&fit=crop"
+];
+
+const quizContainer = document.getElementById('quizContainer');
+let answers = [];
+
+questions.forEach((item,index)=>{
+  const box = document.createElement('div');
+  box.className = 'question-box';
+
+  box.innerHTML = `
+    <div class="question">${index+1}. ${item.q}</div>
+    <div class="options">
+      ${item.options.map((opt,i)=>`
+        <button class="option-btn" onclick="selectOption(${index},${i},this)">${opt}</button>
+      `).join('')}
+    </div>
+  `;
+
+  quizContainer.appendChild(box);
+});
+
+function selectOption(questionIndex,optionIndex,btn){
+  answers[questionIndex] = optionIndex;
+
+  const parent = btn.parentElement;
+  [...parent.children].forEach(child=>child.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function showResult(){
+  if(answers.length < 20){
+    alert('Please answer all 20 questions!');
+    return;
+  }
+
+  let score = answers.reduce((a,b)=>a+b,0);
+
+  let character = animeCharacters[score % animeCharacters.length];
+  let desc = descriptions[score % descriptions.length];
+  let image = images[score % images.length];
+
+  document.getElementById('characterName').innerText = character;
+  document.getElementById('characterDesc').innerText = desc;
+  document.getElementById('characterImg').src = image;
+
+  document.getElementById('result').style.display='block';
+
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+
+function toggleMusic(){
+  const music = document.getElementById('bgMusic');
+
+  if(music.paused){
+    music.play();
+  }else{
+    music.pause();
+  }
+}
+
+for(let i=0;i<35;i++){
+  let circle = document.createElement('div');
+  circle.classList.add('circle');
+
+  let size = Math.random()*120;
+  circle.style.width = size + 'px';
+  circle.style.height = size + 'px';
+
+  circle.style.left = Math.random()*100 + '%';
+  circle.style.animationDuration = (Math.random()*10+10) + 's';
+  circle.style.opacity = Math.random();
+
+  document.getElementById('bg').appendChild(circle);
+}
+
+</script>
+
+</body>
+</html>
